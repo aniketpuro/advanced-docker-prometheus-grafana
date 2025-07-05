@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'flask_service'
+    static_configs:
+      - targets: ['service_flask:5000']
+
+  - job_name: 'node_service'
+    static_configs:
+      - targets: ['service_node:5001']
