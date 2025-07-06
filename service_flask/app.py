@@ -1,19 +1,19 @@
-from flask import Flask
-import time
-import random
+from flask import Flask, Response # type: ignore
+from prometheus_client import generate_latest, Counter, CONTENT_TYPE_LATEST # type: ignore
 
 app = Flask(__name__)
 
-@app.route('/flask')
-def hello_flask():
-    return {"message": "Hello from Flask!"}
+# Metric
+REQUEST_COUNTER = Counter('flask_app_requests_total', 'Total requests to the Flask app')
+
+@app.route('/')
+def home():
+    REQUEST_COUNTER.inc()
+    return 'Hello from Flask service!'
 
 @app.route('/metrics')
 def metrics():
-    return (
-        f'request_duration_seconds {random.uniform(0.1, 1.0)}\n'
-        f'app_uptime_seconds {int(time.time())}'
-    )
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
